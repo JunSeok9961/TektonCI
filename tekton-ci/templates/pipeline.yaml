@@ -29,7 +29,7 @@ spec:
       taskRef:
         name: build-and-push
       params:
-        - name: IMAGE
+        - name: container-image
           value: $(params.container-image)
       workspaces:
         - name: source-code         # build-and-push Task 내 워크스페이스 별칭 (같이 쓰는 공간)
