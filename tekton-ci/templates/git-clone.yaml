@@ -1,0 +1,35 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: git-clone
+spec:
+  workspaces:
+    - name: source-code   
+  params:
+    - name: url
+      type: string
+    - name: revision
+      type: string
+      default: "main"
+  steps:
+    - name: clone
+      image: alpine/git
+      script: |
+        #!/bin/sh
+        echo "Workspace path: $(workspaces.source-code.path)"
+        rm -rf $(workspaces.source-code.path)/*
+        REPO_PATH=$(echo "$(params.url)" | sed 's|https://github.com/||')
+        echo "Cloning repo https://$GIT_USERNAME:$GIT_TOKEN@github.com/$REPO_PATH --branch $(params.revision) to $(workspaces.source-code.path)"
+        git clone https://$GIT_USERNAME:$GIT_TOKEN@github.com/$REPO_PATH --branch $(params.revision) $(workspaces.source-code.path)
+        ls -al $(workspaces.source-code.path)
+      env:
+        - name: GIT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: github-secret
+              key: username
+        - name: GIT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github-secret
+              key: password

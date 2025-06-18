@@ -1,0 +1,31 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: build-and-push
+spec:
+  params:
+    - name: container-image
+      type: string
+  workspaces:
+    - name: source-code 
+  volumes:
+    - name: kaniko-secret
+      secret:
+        secretName: kaniko-secret
+  steps:
+    - name: step-kaniko
+      image: gcr.io/kaniko-project/executor:latest
+      command:
+        - /kaniko/executor
+      args:
+        - --dockerfile=/workspace/source-code/dockerfile
+        - --context=/workspace/source-code 
+        - --destination=$(params.container-image)
+        - --skip-tls-verify
+        - --skip-tls-verify-pull
+      volumeMounts:
+        - name: kaniko-secret
+          mountPath: /secret
+      env:
+        - name: GOOGLE_APPLICATION_CREDENTIALS
+          value: /secret/kaniko-secret.json
