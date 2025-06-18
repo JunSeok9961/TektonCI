@@ -1,3 +1,14 @@
 apiVersion: v1
-entries: {}
-generated: "2025-06-18T14:45:33.5808666+09:00"
+entries:
+  tekton-ci:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2025-06-18T15:03:57.6665618+09:00"
+    description: A Helm chart for Kubernetes
+    digest: 3b18a46089e2acc57c35e888c52390f562264fb94a1248c61a3629173cfae4ef
+    name: tekton-ci
+    type: application
+    urls:
+    - tekton-ci-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-06-18T15:03:57.638063+09:00"
