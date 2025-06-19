@@ -7,7 +7,7 @@ spec:
     - name: container-image
       type: string
   workspaces:
-    - name: source-code 
+    - name: source-code
   volumes:
     - name: kaniko-secret
       secret:
@@ -15,11 +15,19 @@ spec:
   steps:
     - name: step-kaniko
       image: gcr.io/kaniko-project/executor:latest
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
       command:
         - /kaniko/executor
       args:
         - --dockerfile=/workspace/source-code/dockerfile
-        - --context=/workspace/source-code 
+        - --context=/workspace/source-code
         - --destination=$(params.container-image)
         - --skip-tls-verify
         - --skip-tls-verify-pull

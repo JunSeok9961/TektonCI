@@ -4,7 +4,7 @@ metadata:
   name: git-clone
 spec:
   workspaces:
-    - name: source-code   
+    - name: source-code
   params:
     - name: url
       type: string
@@ -14,12 +14,21 @@ spec:
   steps:
     - name: clone
       image: alpine/git
+      securityContext:
+        allowPrivilegeEscalation: false
+        runAsNonRoot: true
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
       script: |
         #!/bin/sh
+        set -e
         echo "Workspace path: $(workspaces.source-code.path)"
-        rm -rf $(workspaces.source-code.path)/*
+        find $(workspaces.source-code.path) -mindepth 1 -delete
         REPO_PATH=$(echo "$(params.url)" | sed 's|https://github.com/||')
-        echo "Cloning repo https://$GIT_USERNAME:$GIT_TOKEN@github.com/$REPO_PATH --branch $(params.revision) to $(workspaces.source-code.path)"
+        echo "Cloning repo https://$GIT_USERNAME:$GIT_TOKEN@github.com/$REPO_PATH --branch $(params.revision)"
         git clone https://$GIT_USERNAME:$GIT_TOKEN@github.com/$REPO_PATH --branch $(params.revision) $(workspaces.source-code.path)
         ls -al $(workspaces.source-code.path)
       env:
